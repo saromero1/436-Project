@@ -2,6 +2,8 @@ import socket
 from threading import Thread
 from datetime import datetime
 
+#creating flags & variables
+
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
 host_name = "127.0.1.1"
@@ -13,9 +15,19 @@ print("Connecting to", host_name, port, "...")
 new_socket.connect((host_name, port))
 print("Connected.")
 
+#prompts menu with 3 options
+print("Please select one of the following options:")
+print("1. Get a report of the chatroom from the server.")
+print("2. Request to join the chatroom.")
+print("3. Quit the program.")
+choice = input()
+print("your choice:", choice)
+
+
 # Prompts the client for a username
-print("Type lowercase 'q' at anytime to quit!")
-name = input("Enter your a username: ")
+if choice == "2":
+    print("Type lowercase 'q' at anytime to quit!")
+    name = input("Enter your a username: ")
 
 
 # Thread to listen for messages from the server
