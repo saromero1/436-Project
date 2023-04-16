@@ -18,6 +18,12 @@ serverSocket.listen(10)
 # Creates a set of clients
 client_List = set()
 msgList = []
+
+# Function to send a message to all connected clients
+def broadcast(msg):
+    for client_socket in client_List:
+        client_socket.send(msg.encode())
+
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
@@ -38,6 +44,7 @@ def clientWatch(cs):
             if msg == "q":
                 print("Client Disconnected")
                 client_List.remove(cs)
+                broadcast("Server: " + cs.getpeername()[0] + " has left the chatroom.\n")
                 cs.close()
 
                 break
@@ -61,8 +68,7 @@ def clientWatch(cs):
 
         # Iterates through clients and sends the message to all connected clients
         msgList.append(msg)
-        for client_socket in client_List:
-            client_socket.send(msg.encode())
+        broadcast(msg)
 
 
 while True:
@@ -71,6 +77,9 @@ while True:
     print(client_address, "Connected!")
     # Adds the client's socket to the client set
     client_List.add(client_socket)
+
+    # Send a message to all connected clients that a new user has joined
+    broadcast("Server:" + client_address[0] + " has joined the chatroom.\n")
 
     # Create a thread that listens for each client's messages
     t = Thread(target=clientWatch, args=(client_socket,))
