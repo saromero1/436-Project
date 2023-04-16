@@ -20,6 +20,13 @@ print("your choice:", choice)
 
 # Prompts the client for a username
 if choice == "2":
+
+    # Creates the TCP socket
+    new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print("Connecting to", host_name, port, "...")
+    new_socket.connect((host_name, port))
+    print("Connected.")
+
     print("Type lowercase 'q' at anytime to quit!")
     name = input("Enter your a username: ")
 elif choice == 1:
@@ -27,12 +34,6 @@ elif choice == 1:
     exit()
 else:
     exit()
-
-# Creates the TCP socket
-new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print("Connecting to", host_name, port, "...")
-new_socket.connect((host_name, port))
-print("Connected.")
 
 
 
