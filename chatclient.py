@@ -9,12 +9,6 @@ from datetime import datetime
 host_name = "127.0.1.1"
 port = 18000
 
-# Creates the TCP socket
-new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print("Connecting to", host_name, port, "...")
-new_socket.connect((host_name, port))
-print("Connected.")
-
 #prompts menu with 3 options
 print("Please select one of the following options:")
 print("1. Get a report of the chatroom from the server.")
@@ -28,6 +22,18 @@ print("your choice:", choice)
 if choice == "2":
     print("Type lowercase 'q' at anytime to quit!")
     name = input("Enter your a username: ")
+elif choice == 1:
+    #do option 1, adding exit in the meantime
+    exit()
+else:
+    exit()
+
+# Creates the TCP socket
+new_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+print("Connecting to", host_name, port, "...")
+new_socket.connect((host_name, port))
+print("Connected.")
+
 
 
 # Thread to listen for messages from the server
