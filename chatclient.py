@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "192.168.56.1"
+host_name = "144.37.106.49"
 port = 18000
 
 #Flags
@@ -24,14 +24,18 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
+MSG = ""
 
 def listen_for_messages():
+    global MSG
     while True:
         try:
             message = new_socket.recv(1024).decode()
         except ConnectionAbortedError:
             break
-        print("\n" + message)
+
+        print("\n1" + message)
+        print("\n2" + message)
 
 while True:
     #prompts menu with 3 options
@@ -53,8 +57,12 @@ while True:
         print("Type lowercase 'q' at anytime to quit!")
         name = input("Enter your a username: ")
         new_socket.send(name.encode())
+
         # Thread to listen for messages from the server
         t = Thread(target=listen_for_messages)
+        if MSG == "The server rejects the join request. Another user is using this username.":
+            print("FLAG")
+            continue
         t.daemon = True
         t.start()
 
@@ -70,7 +78,7 @@ while True:
 
             # Allows the user to exit the chat room
             if to_send.lower() == "q":
-                new_socket.send(to_send.encode())
+                #new_socket.send(to_send.encode())
                 break
 
             if to_send.lower() == "info":
@@ -95,4 +103,3 @@ while True:
         exit()
 
 
-#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
