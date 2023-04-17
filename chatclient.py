@@ -33,8 +33,7 @@ def listen_for_messages():
             message = new_socket.recv(1024).decode()
         except ConnectionAbortedError:
             break
-
-        print("\n1" + message)
+        MSG = message
         print("\n2" + message)
 
 while True:
@@ -60,11 +59,13 @@ while True:
 
         # Thread to listen for messages from the server
         t = Thread(target=listen_for_messages)
+        t.daemon = True
+        t.start()
+        
         if MSG == "The server rejects the join request. Another user is using this username.":
             print("FLAG")
             continue
-        t.daemon = True
-        t.start()
+        
 
         # if user is an admin send the admin name before appending time and username
         if name == "admin":
