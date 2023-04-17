@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "192.168.1.7"
+host_name = "192.168.56.1"
 port = 18000
 
 #Flags
@@ -69,9 +69,9 @@ while True:
 
             # Allows the user to exit the chat room
             if to_send.lower() == "q":
-                break
                 new_socket.send(to_send.encode())
-                
+                break
+
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send
             date_now = datetime.now().strftime("[%H:%M] ")

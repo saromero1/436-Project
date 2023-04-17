@@ -1,5 +1,6 @@
 import socket
 from threading import Thread
+from datetime import datetime
 
 # Create and Bind a TCP Server Socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,7 +47,8 @@ def broadcast(msg):
 def clientWatch(cs):
     adminFlag = 0
     name = cs.recv(1024).decode()
-    broadcast("Server: " + name + " has joined the chatroom.\n")
+    timestamp = datetime.now().strftime("[%H:%M] ")
+    broadcast(timestamp + "Server: " + name + " has joined the chatroom.\n")
     while True:
         try:
             # Constantly listens for incoming message from a client
@@ -64,7 +66,7 @@ def clientWatch(cs):
             if msg == "q":
                 print("Client Disconnected")
                 client_List.remove(cs)
-                broadcast("Server: " + name + " has left the chatroom.\n")
+                broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
                 cs.close()
 
                 break
