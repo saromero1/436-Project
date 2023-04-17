@@ -6,7 +6,7 @@ from datetime import datetime
 
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "127.0.1.1"
+host_name = "192.168.56.1"
 port = 18000
 
 def listen_for_messages():
@@ -36,7 +36,7 @@ while True:
 
         print("Type lowercase 'q' at anytime to quit!")
         name = input("Enter your a username: ")
-
+        new_socket.send(name.encode())
         # Thread to listen for messages from the server
         t = Thread(target=listen_for_messages)
         t.daemon = True

@@ -24,9 +24,13 @@ def broadcast(msg):
     for client_socket in client_List:
         client_socket.send(msg.encode())
 
+
+
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
+    name = cs.recv(1024).decode()
+    broadcast("Server: " + name + " has joined the chatroom.\n")
     while True:
         try:
             # Constantly listens for incoming message from a client
@@ -44,7 +48,7 @@ def clientWatch(cs):
             if msg == "q":
                 print("Client Disconnected")
                 client_List.remove(cs)
-                broadcast("Server: " + cs.getpeername()[0] + " has left the chatroom.\n")
+                broadcast("Server: " + name + " has left the chatroom.\n")
                 cs.close()
 
                 break
@@ -79,7 +83,7 @@ while True:
     client_List.add(client_socket)
 
     # Send a message to all connected clients that a new user has joined
-    broadcast("Server:" + client_address[0] + " has joined the chatroom.\n")
+    #broadcast("Server:" + client_address[0] + " has joined the chatroom.\n")
 
     # Create a thread that listens for each client's messages
     t = Thread(target=clientWatch, args=(client_socket,))
