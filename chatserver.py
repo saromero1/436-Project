@@ -10,7 +10,20 @@ port = 18000
 serverSocket.bind((host_name, port))
 
 #Flags
-
+JOIN_REJECT_FLAG = 0
+REPORT_REQUEST_FLAG = 0
+REPORT_RESPOSE_FLAG = 0
+JOIN_REQUEST_FLAG = 0
+JOIN_ACCEPT_FLAG = 0
+NEW_USER_FLAG = 0
+QUIT_REQUEST_FLAG = 0
+QUIT_ACCEPT_FLAG = 0
+ATTACHEMENT_FLAG = 0
+NUMBER = 0
+USERNAME = ""
+FILENAME = ""
+PAYLOAD_LENGTH = 0
+PAYLOAD = ""
 
 # Outputs Bound Contents
 print("Socket Bound")
@@ -34,20 +47,8 @@ def broadcast(msg):
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
-    JOIN_REJECT_FLAG = 0
-    REPORT_REQUEST_FLAG = 0
-    REPORT_RESPOSE_FLAG = 0
-    JOIN_REQUEST_FLAG = 0
-    JOIN_ACCEPT_FLAG = 0
-    NEW_USER_FLAG = 0
-    QUIT_REQUEST_FLAG = 0
-    QUIT_ACCEPT_FLAG = 0
-    ATTACHEMENT_FLAG = 0
-    NUMBER = 0
-    USERNAME = ""
-    FILENAME = ""
-    PAYLOAD_LENGTH = 0
-    PAYLOAD = ""
+    global JOIN_REJECT_FLAG
+    global NUMBER
 
     name = cs.recv(1024).decode()
 
@@ -77,7 +78,7 @@ def clientWatch(cs):
                     #cs.close()
                     break
                 '''
-                
+
                 # Constantly listens for incoming message from a client
                 msg = cs.recv(1024).decode()
 
@@ -131,22 +132,25 @@ def clientWatch(cs):
                     
 
 while True:
-    # Continues to listen / accept new clients
-    client_socket, client_address = serverSocket.accept()
-    print(client_address, "Connected!")
-    # Adds the client's socket to the client set
-    client_List.add(client_socket)
+    if JOIN_REJECT_FLAG != 1:
+        # Continues to listen / accept new clients
+        client_socket, client_address = serverSocket.accept()
+        print(client_address, "Connected!")
+        # Adds the client's socket to the client set
+        client_List.add(client_socket)
 
-    # Send a message to all connected clients that a new user has joined
-    #broadcast("Server:" + client_address[0] + " has joined the chatroom.\n")
+        # Send a message to all connected clients that a new user has joined
+        #broadcast("Server:" + client_address[0] + " has joined the chatroom.\n")
 
-    # Create a thread that listens for each client's messages
-    t = Thread(target=clientWatch, args=(client_socket,))
+        # Create a thread that listens for each client's messages
+        t = Thread(target=clientWatch, args=(client_socket,))
 
-    # Make a daemon so thread ends when main thread ends
-    t.daemon = True
+        # Make a daemon so thread ends when main thread ends
+        t.daemon = True
 
-    t.start()
+        t.start()
+    else:
+        continue
 
 # Close out clients
 for cs in client_List:

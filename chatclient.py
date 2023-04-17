@@ -62,6 +62,7 @@ while True:
         t.daemon = True
         t.start()
         
+       # print("MESSAGE " + MSG)
         if MSG == "The server rejects the join request. Another user is using this username.":
             print("FLAG")
             continue
