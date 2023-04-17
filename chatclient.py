@@ -6,8 +6,24 @@ from datetime import datetime
 
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "192.168.56.1"
+host_name = "192.168.1.7"
 port = 18000
+
+#Flags
+REPORT_REQUEST_FLAG = 0
+REPORT_RESPOSE_FLAG = 0
+JOIN_REQUEST_FLAG = 0
+JOIN_REJECT_FLAG = 0
+JOIN_ACCEPT_FLAG = 0
+NEW_USER_FLAG = 0
+QUIT_REQUEST_FLAG = 0
+QUIT_ACCEPT_FLAG = 0
+ATTACHEMENT_FLAG = 0
+NUMBER = 0
+USERNAME = ""
+FILENAME = ""
+PAYLOAD_LENGTH = 0
+PAYLOAD = ""
 
 def listen_for_messages():
     while True:
@@ -53,8 +69,9 @@ while True:
 
             # Allows the user to exit the chat room
             if to_send.lower() == "q":
-                new_socket.send(to_send.encode())
                 break
+                new_socket.send(to_send.encode())
+                
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send
             date_now = datetime.now().strftime("[%H:%M] ")

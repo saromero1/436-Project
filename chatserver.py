@@ -8,6 +8,22 @@ s_ip = socket.gethostbyname(host_name)
 port = 18000
 serverSocket.bind((host_name, port))
 
+#Flags
+REPORT_REQUEST_FLAG = 0
+REPORT_RESPOSE_FLAG = 0
+JOIN_REQUEST_FLAG = 0
+JOIN_REJECT_FLAG = 0
+JOIN_ACCEPT_FLAG = 0
+NEW_USER_FLAG = 0
+QUIT_REQUEST_FLAG = 0
+QUIT_ACCEPT_FLAG = 0
+ATTACHEMENT_FLAG = 0
+NUMBER = 0
+USERNAME = ""
+FILENAME = ""
+PAYLOAD_LENGTH = 0
+PAYLOAD = ""
+
 # Outputs Bound Contents
 print("Socket Bound")
 print("Server IP: ", s_ip, " Server Port:", port)
