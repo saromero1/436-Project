@@ -63,6 +63,7 @@ while True:
             print("Welcome Administrator")
             new_socket.send(name.encode())
 
+
         while True:
             # Recieves input from the user for a message
             to_send = input()
@@ -71,6 +72,9 @@ while True:
             if to_send.lower() == "q":
                 new_socket.send(to_send.encode())
                 break
+
+            if to_send.lower() == "info":
+                new_socket.send(to_send.encode())
 
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send

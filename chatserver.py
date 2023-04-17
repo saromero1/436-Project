@@ -35,6 +35,7 @@ serverSocket.listen(10)
 # Creates a set of clients
 client_List = set()
 msgList = []
+userList = []
 
 # Function to send a message to all connected clients
 def broadcast(msg):
@@ -46,11 +47,32 @@ def broadcast(msg):
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
+    JOIN_REJECT_FLAG = 0
     name = cs.recv(1024).decode()
+
+    #checking to see if username is already selected
+    for x in userList:
+        if name == x:
+            JOIN_REJECT_FLAG = 1
+        else:
+            JOIN_REJECT_FLAG = 0
+
+    print(JOIN_REJECT_FLAG)
+    userList.append(name)
     timestamp = datetime.now().strftime("[%H:%M] ")
     broadcast(timestamp + "Server: " + name + " has joined the chatroom.\n")
+    print("The current list of user is: ", userList)
+
+
     while True:
         try:
+            if JOIN_REJECT_FLAG == 1:
+                print("The server rejects the join request. Another user is using this username.")
+                #cs.send("JOIN_REJECT".encode())
+                client_List.remove(cs)
+                #cs.close()
+                break
+
             # Constantly listens for incoming message from a client
             msg = cs.recv(1024).decode()
 
@@ -67,9 +89,16 @@ def clientWatch(cs):
                 print("Client Disconnected")
                 client_List.remove(cs)
                 broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
+                userList.remove(name)
                 cs.close()
+                print("The current list of user is: ", userList)
 
                 break
+
+            if msg == "info":
+                print("Here is the info mate")
+                print(client_List)
+
         except Exception as e:
             print("Error")
             client_List.remove(cs)
@@ -87,6 +116,7 @@ def clientWatch(cs):
 
             cs.send(("\n----------EndLog----------").encode())
             continue
+
 
         # Iterates through clients and sends the message to all connected clients
         msgList.append(msg)
