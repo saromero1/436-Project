@@ -44,6 +44,7 @@ def broadcast(msg):
 
 
 
+
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
@@ -129,9 +130,10 @@ def clientWatch(cs):
             broadcast(msg)
     else:
         cs.send("The server rejects the join request. Another user is using this username.".encode())
-                    
+
 
 while True:
+    print("JOIN REJECT FLAG = " , JOIN_REJECT_FLAG)
     if JOIN_REJECT_FLAG != 1:
         # Continues to listen / accept new clients
         client_socket, client_address = serverSocket.accept()
@@ -150,6 +152,7 @@ while True:
 
         t.start()
     else:
+        JOIN_REJECT_FLAG = 0
         continue
 
 # Close out clients
