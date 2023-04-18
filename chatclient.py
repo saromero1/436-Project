@@ -1,14 +1,11 @@
 import socket
 from threading import Thread
 from datetime import datetime
-
 #creating flags & variables
-
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "144.37.106.49"
+host_name = "144.37.124.178"
 port = 18000
-
 #Flags
 REPORT_REQUEST_FLAG = 0
 REPORT_RESPOSE_FLAG = 0
@@ -24,17 +21,22 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
-MSG = ""
-
 def listen_for_messages():
-    global MSG
     while True:
+        global NEW_USER_FLAG
+        count = 0
         try:
-            message = new_socket.recv(1024).decode()
+            if count == 0:
+                message = new_socket.recv(1024).decode()
+                count = count + 1
         except ConnectionAbortedError:
             break
-        MSG = message
-        print("\n2" + message)
+
+        if message == "REJECTED":
+            NEW_USER_FLAG = 1
+        else:
+            NEW_USER_FLAG = 0
+            print("\n" + message)
 
 while True:
     #prompts menu with 3 options
@@ -52,21 +54,21 @@ while True:
         print("Connecting to", host_name, port, "...")
         new_socket.connect((host_name, port))
         print("Connected.")
-
         print("Type lowercase 'q' at anytime to quit!")
         name = input("Enter your a username: ")
-        new_socket.send(name.encode())
 
         # Thread to listen for messages from the server
         t = Thread(target=listen_for_messages)
         t.daemon = True
         t.start()
+
+        #first s
+        new_socket.send(name.encode())
+
         
-       # print("MESSAGE " + MSG)
-        if MSG == "The server rejects the join request. Another user is using this username.":
-            print("FLAG")
-            continue
-        
+        message = new_socket.recv(1024).decode()
+        if message == "REJECTED":
+            print("WE ARE FINALLY REJECTED")
 
         # if user is an admin send the admin name before appending time and username
         if name == "admin":
@@ -75,12 +77,15 @@ while True:
 
 
         while True:
+            if message == "REJECTED":
+                new_socket.send("q".encode())
+                break
             # Recieves input from the user for a message
             to_send = input()
-
             # Allows the user to exit the chat room
-            if to_send.lower() == "q":
-                #new_socket.send(to_send.encode())
+
+            if to_send.lower() == "q" or NEW_USER_FLAG == 1:
+                new_socket.send("q".encode())
                 break
 
             if to_send.lower() == "info":
@@ -90,18 +95,15 @@ while True:
             to_send = name + ": " + to_send
             date_now = datetime.now().strftime("[%H:%M] ")
             to_send = date_now + to_send
-
             # Sends the message to the server
             new_socket.send(to_send.encode())
-
         # close the socket
         new_socket.close()
-
     elif choice == "1":
         #do option 1, adding exit in the meantime
         exit()
         menu() #prints the menu again
     else:
+        #new_socket.send("q".encode())
         exit()
-
-
+#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
