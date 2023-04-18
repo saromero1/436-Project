@@ -80,7 +80,7 @@ while True:
 
             # Allows the user to exit the chat room
             if to_send.lower() == "q":
-                #new_socket.send(to_send.encode())
+                new_socket.send(to_send.encode())
                 break
 
             if to_send.lower() == "info":

@@ -99,7 +99,6 @@ def clientWatch(cs):
                     userList.remove(name)
                     cs.close()
                     print("The current list of user is: ", userList)
-
                     break
 
                 if msg == "info":
