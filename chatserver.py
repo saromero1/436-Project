@@ -1,12 +1,14 @@
 import socket
 from threading import Thread
 from datetime import datetime
+
 # Create and Bind a TCP Server Socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_name = socket.gethostname()
 s_ip = socket.gethostbyname(host_name)
 port = 18000
 serverSocket.bind((host_name, port))
+
 #Flags
 REPORT_REQUEST_FLAG = 0
 REPORT_RESPOSE_FLAG = 0
@@ -22,11 +24,14 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
+
 # Outputs Bound Contents
 print("Socket Bound")
 print("Server IP: ", s_ip, " Server Port:", port)
+
 # Listens for 10 Users
 serverSocket.listen(10)
+
 # Creates a set of clients
 client_List = set()
 msgList = []
@@ -48,6 +53,7 @@ def menu_list(my_list, my_tuples):
     my_string = ', '.join(str(x) for x in result)
 
     return my_string
+
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
@@ -75,14 +81,6 @@ def clientWatch(cs):
         if name in userList:
             JOIN_REJECT_FLAG = 1
 
-        '''
-        #checking to see if username is already selected
-        for x in userList:
-            if name == x:
-                JOIN_REJECT_FLAG = 1
-            else:
-                JOIN_REJECT_FLAG = 0
-        '''
         print(JOIN_REJECT_FLAG)
         userList.append(name)
         timestamp = datetime.now().strftime("[%H:%M] ")
@@ -97,24 +95,13 @@ def clientWatch(cs):
                 # print(x)
                 cs.send((x + "\n").encode())
 
-
     while True:
         try:
             if JOIN_REJECT_FLAG == 1:
                 if NUMBER > 3:
-                    #print("The server rejects the join request. The chatroom has reached its maximum capacity.")
                     cs.send("REJECTED1".encode())
-                    #userList.remove(name)
-                    #client_List.remove(cs)
-                    #cs.close()
-                    #break
                 else:
-                    #print("The server rejects the join request. Another user is using this username.")
                     cs.send("REJECTED2".encode())
-                    #userList.remove(name)
-                    #client_List.remove(cs)
-                    #cs.close()
-                    #break
 
             # Constantly listens for incoming message from a client 2nd
             msg = cs.recv(1024).decode()
@@ -126,6 +113,7 @@ def clientWatch(cs):
                 adminMsg = "Type 'viewall' to view all recorded messages"
                 cs.send(adminMsg.encode())
                 continue
+
             # if q is entered remove the client from the client list and close connection
             if msg == "q":
                 if QUIT_REQUEST_FLAG == 1:
@@ -135,6 +123,7 @@ def clientWatch(cs):
                     cs.close()
                     print("The current list of user is: ", userList)
                     break
+
                 else:
                     print("Client Disconnected")
                     client_List.remove(cs)
@@ -169,7 +158,6 @@ def clientWatch(cs):
                 cs.send((x + "\n").encode())
             cs.send(("\n----------EndLog----------").encode())
             continue
-
 
         # Iterates through clients and sends the message to all connected clients
         msgList.append(msg)
