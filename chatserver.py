@@ -40,16 +40,25 @@ def broadcast(msg):
 def clientWatch(cs):
     adminFlag = 0
     JOIN_REJECT_FLAG = 0
+    global NUMBER
+
     #first
     name = cs.recv(1024).decode()
 
+    if NUMBER > 3:
+        JOIN_REJECT_FLAG = 1
+    
+    if name in userList:
+        JOIN_REJECT_FLAG = 1
+
+    '''
     #checking to see if username is already selected
     for x in userList:
         if name == x:
             JOIN_REJECT_FLAG = 1
         else:
             JOIN_REJECT_FLAG = 0
-
+    '''
     print(JOIN_REJECT_FLAG)
     userList.append(name)
     timestamp = datetime.now().strftime("[%H:%M] ")
@@ -60,12 +69,20 @@ def clientWatch(cs):
     while True:
         try:
             if JOIN_REJECT_FLAG == 1:
-                print("The server rejects the join request. Another user is using this username.")
-                cs.send("REJECTED".encode())
-                #userList.remove(name)
-                #client_List.remove(cs)
-                #cs.close()
-                #break
+                if NUMBER > 3:
+                    #print("The server rejects the join request. The chatroom has reached its maximum capacity.")
+                    cs.send("REJECTED1".encode())
+                    #userList.remove(name)
+                    #client_List.remove(cs)
+                    #cs.close()
+                    #break
+                else:
+                    #print("The server rejects the join request. Another user is using this username.")
+                    cs.send("REJECTED2".encode())
+                    #userList.remove(name)
+                    #client_List.remove(cs)
+                    #cs.close()
+                    #break
 
             # Constantly listens for incoming message from a client 2nd
             msg = cs.recv(1024).decode()
@@ -81,6 +98,7 @@ def clientWatch(cs):
             if msg == "q":
                 print("Client Disconnected")
                 client_List.remove(cs)
+                NUMBER -= 1
                 broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
                 userList.remove(name)
                 cs.close()
@@ -116,6 +134,7 @@ while True:
     # Continues to listen / accept new clients
     client_socket, client_address = serverSocket.accept()
     print(client_address, "Connected!")
+    NUMBER += 1
     # Adds the client's socket to the client set
     client_List.add(client_socket)
     # Send a message to all connected clients that a new user has joined

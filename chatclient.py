@@ -61,14 +61,18 @@ while True:
         t = Thread(target=listen_for_messages)
         t.daemon = True
         t.start()
-
+        
         #first s
         new_socket.send(name.encode())
 
         
         message = new_socket.recv(1024).decode()
-        if message == "REJECTED":
-            print("WE ARE FINALLY REJECTED")
+        if message == "REJECTED1":
+            print("The server rejects the join request. The chatroom has reached its maximum capacity.")
+        elif message == "REJECTED2":
+            print("The server rejects the join request. Another user is using this username.")
+
+        print("Type lowercase ‘a’ and press enter at any time to upload an attachment to the chatroom.")
 
         # if user is an admin send the admin name before appending time and username
         if name == "admin":
@@ -77,7 +81,7 @@ while True:
 
 
         while True:
-            if message == "REJECTED":
+            if message == "REJECTED1" or message == "REJECTED2":
                 new_socket.send("q".encode())
                 break
             # Recieves input from the user for a message
@@ -90,6 +94,18 @@ while True:
 
             if to_send.lower() == "info":
                 new_socket.send(to_send.encode())
+
+            if to_send.lower() == "a":
+                print("Please enter the file path and name:")
+                file_path = input()
+                try:
+                    with open(file_path, "r") as f:
+                        file_content = f.read()
+                        # Send the file content as a message to the server
+                        to_send = file_content
+                except:
+                    print("Error: Could not open or read file")
+                
 
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send
