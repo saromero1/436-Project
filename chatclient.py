@@ -21,6 +21,22 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
+def parse_string(input_str):
+    # Splitting the string into a list
+    input_list = input_str.split(", ")
+
+    # Creating a new list with formatted strings
+    output_list = []
+    for i in range(0, len(input_list)-2, 3):
+        output_list.append(f"{i//3+1}. {input_list[i]} at IP: {input_list[i+2]} and port: {input_list[i+3]}")
+
+    # Joining the list elements into a single string with newline character
+    output_str = "\n".join(output_list)
+
+    # Printing the output string
+    print(output_str)
+
+
 def listen_for_messages():
     while True:
         global NEW_USER_FLAG
@@ -37,6 +53,29 @@ def listen_for_messages():
         else:
             NEW_USER_FLAG = 0
             print("\n" + message)
+
+def get_chatroom_report():
+    # Create a new socket to send the report request
+    report_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    report_socket.connect((host_name, port))
+
+    # Send the report request message to the server
+    report_socket.send("REPORT_REQUEST".encode())
+
+    # Listen for the response from the server
+    report_response = report_socket.recv(1024).decode()
+    report_response1 = report_socket.recv(1024).decode()
+
+    #send quitting to server
+    report_socket.send("q".encode())
+
+    # Close the socket
+    report_socket.close()
+
+    # Print the response message from the server
+    print("There are " + report_response + "active users in the chatroom.")
+    parse_string(report_response1)
+
 
 while True:
     #prompts menu with 3 options
@@ -75,9 +114,10 @@ while True:
         print("Type lowercase ‘a’ and press enter at any time to upload an attachment to the chatroom.")
 
         # if user is an admin send the admin name before appending time and username
-        if name == "admin":
+        if name == "damin":
             print("Welcome Administrator")
             new_socket.send(name.encode())
+          
 
 
         while True:
@@ -117,8 +157,8 @@ while True:
         new_socket.close()
     elif choice == "1":
         #do option 1, adding exit in the meantime
+        get_chatroom_report()
         exit()
-        menu() #prints the menu again
     else:
         #new_socket.send("q".encode())
         exit()

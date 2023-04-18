@@ -31,39 +31,60 @@ serverSocket.listen(10)
 client_List = set()
 msgList = []
 userList = []
+client_info = []
 
 # Function to send a message to all connected clients
 def broadcast(msg):
     for client_socket in client_List:
         client_socket.send(msg.encode())
+
+def menu_list(my_list, my_tuples):
+
+    result = []
+    for t in my_tuples:
+        result.extend(list(t))
+
+    result = my_list + result
+    my_string = ', '.join(str(x) for x in result)
+
+    return my_string
 # Function to constantly listen for an client's incoming messages and sends them to the other clients
 def clientWatch(cs):
     adminFlag = 0
     JOIN_REJECT_FLAG = 0
+    QUIT_REQUEST_FLAG = 0
     global NUMBER
 
     #first
     name = cs.recv(1024).decode()
+    if name == "REPORT_REQUEST":
+        online_users = len(userList)
+        client_socket.send(str(online_users).encode())
+        client_info.pop()
+        data = menu_list(userList, client_info)
+        client_socket.send(data.encode())
+        QUIT_REQUEST_FLAG = 1
+    else:
 
-    if NUMBER > 3:
-        JOIN_REJECT_FLAG = 1
-    
-    if name in userList:
-        JOIN_REJECT_FLAG = 1
-
-    '''
-    #checking to see if username is already selected
-    for x in userList:
-        if name == x:
+        if NUMBER > 3:
             JOIN_REJECT_FLAG = 1
-        else:
-            JOIN_REJECT_FLAG = 0
-    '''
-    print(JOIN_REJECT_FLAG)
-    userList.append(name)
-    timestamp = datetime.now().strftime("[%H:%M] ")
-    broadcast(timestamp + "Server: " + name + " has joined the chatroom.\n")
-    print("The current list of user is: ", userList)
+        
+        if name in userList:
+            JOIN_REJECT_FLAG = 1
+
+        '''
+        #checking to see if username is already selected
+        for x in userList:
+            if name == x:
+                JOIN_REJECT_FLAG = 1
+            else:
+                JOIN_REJECT_FLAG = 0
+        '''
+        print(JOIN_REJECT_FLAG)
+        userList.append(name)
+        timestamp = datetime.now().strftime("[%H:%M] ")
+        broadcast(timestamp + "Server: " + name + " has joined the chatroom.\n")
+        print("The current list of user is: ", userList)
 
 
     while True:
@@ -96,15 +117,26 @@ def clientWatch(cs):
                 continue
             # if q is entered remove the client from the client list and close connection
             if msg == "q":
-                print("Client Disconnected")
-                client_List.remove(cs)
-                NUMBER -= 1
-                broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
-                userList.remove(name)
-                cs.close()
-                print("The current list of user is: ", userList)
+                if QUIT_REQUEST_FLAG == 1:
+                    print("Client Disconnected")
+                    client_List.remove(cs)
+                    NUMBER -= 1
+                    cs.close()
+                    print("The current list of user is: ", userList)
+                    break
+                else:
+                    print("Client Disconnected")
+                    client_List.remove(cs)
+                    NUMBER -= 1
+                    broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
+                    userList.remove(name)
+                    cs.close()
+                    print("The current list of user is: ", userList)
+                    client_info.pop()
+                    break
 
-                break
+            if msg == "REPORT_REQUEST":
+                cs.send("it worked".encode())
 
             if msg == "info":
                 print("Here is the info mate")
@@ -134,6 +166,7 @@ while True:
     # Continues to listen / accept new clients
     client_socket, client_address = serverSocket.accept()
     print(client_address, "Connected!")
+    client_info.append(client_address)
     NUMBER += 1
     # Adds the client's socket to the client set
     client_List.add(client_socket)
