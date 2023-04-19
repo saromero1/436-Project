@@ -4,7 +4,7 @@ from datetime import datetime
 #creating flags & variables
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "144.37.124.178"
+host_name = "192.168.56.1"
 port = 18000
 #Flags
 REPORT_REQUEST_FLAG = 0
@@ -21,21 +21,24 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
-def parse_string(input_str):
+def parse_string(input_str, user_size):
     # Splitting the string into a list
     input_list = input_str.split(", ")
-
+    user_size_int = int(user_size)
     # Creating a new list with formatted strings
-    output_list = []
-    for i in range(0, len(input_list)-2, 3):
-        output_list.append(f"{i//3+1}. {input_list[i]} at IP: {input_list[i+2]} and port: {input_list[i+3]}")
+    if user_size_int == 3:
+        for x in range(0, user_size_int):
+            print(str(x+1) +". " + input_list[x] + " at IP: " + input_list[x+3] + " and port: " + input_list[x+4])
+            input_list.pop(4)
 
-    # Joining the list elements into a single string with newline character
-    output_str = "\n".join(output_list)
+    elif user_size_int == 2:
+        for x in range(0, user_size_int):
+            print(str(x+1) +". " + input_list[x] + " at IP: " + input_list[x+2] + " and port: " + input_list[x+3])
+            input_list.pop(2)
 
-    # Printing the output string
-    print(output_str)
-
+    else:
+        for x in range(0, user_size_int):
+            print(str(x+1) +". " + input_list[x] + " at IP: " + input_list[x+1] + " and port: " + input_list[x+2])
 
 def listen_for_messages():
     while True:
@@ -63,8 +66,8 @@ def get_chatroom_report():
     report_socket.send("REPORT_REQUEST".encode())
 
     # Listen for the response from the server
+    online_users = report_socket.recv(1024).decode()
     report_response = report_socket.recv(1024).decode()
-    report_response1 = report_socket.recv(1024).decode()
 
     #send quitting to server
     report_socket.send("q".encode())
@@ -73,8 +76,8 @@ def get_chatroom_report():
     report_socket.close()
 
     # Print the response message from the server
-    print("There are " + report_response + "active users in the chatroom.")
-    parse_string(report_response1)
+    print("There are " + online_users + " active users in the chatroom.")
+    parse_string(report_response, online_users)
 
 
 while True:
@@ -100,11 +103,11 @@ while True:
         t = Thread(target=listen_for_messages)
         t.daemon = True
         t.start()
-        
+
         #first s
         new_socket.send(name.encode())
 
-        
+
         message = new_socket.recv(1024).decode()
         if message == "REJECTED1":
             print("The server rejects the join request. The chatroom has reached its maximum capacity.")
@@ -117,7 +120,7 @@ while True:
         if name == "damin":
             print("Welcome Administrator")
             new_socket.send(name.encode())
-          
+
 
 
         while True:
@@ -145,7 +148,7 @@ while True:
                         to_send = file_content
                 except:
                     print("Error: Could not open or read file")
-                
+
 
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send
@@ -158,7 +161,6 @@ while True:
     elif choice == "1":
         #do option 1, adding exit in the meantime
         get_chatroom_report()
-        exit()
     else:
         #new_socket.send("q".encode())
         exit()

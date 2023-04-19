@@ -61,14 +61,17 @@ def clientWatch(cs):
         online_users = len(userList)
         client_socket.send(str(online_users).encode())
         client_info.pop()
-        data = menu_list(userList, client_info)
+        if online_users == 0:
+            data = '0'
+        else:
+            data = menu_list(userList, client_info)
         client_socket.send(data.encode())
         QUIT_REQUEST_FLAG = 1
     else:
 
         if NUMBER > 3:
             JOIN_REJECT_FLAG = 1
-        
+
         if name in userList:
             JOIN_REJECT_FLAG = 1
 
@@ -84,7 +87,15 @@ def clientWatch(cs):
         userList.append(name)
         timestamp = datetime.now().strftime("[%H:%M] ")
         broadcast(timestamp + "Server: " + name + " has joined the chatroom.\n")
+        msgList.append(timestamp + "Server: " + name + " has joined the chatroom.\n")
         print("The current list of user is: ", userList)
+
+        # Print chat log when a new user enters
+
+        if (JOIN_REJECT_FLAG != 1):
+            for x in msgList:
+                # print(x)
+                cs.send((x + "\n").encode())
 
 
     while True:
@@ -129,6 +140,7 @@ def clientWatch(cs):
                     client_List.remove(cs)
                     NUMBER -= 1
                     broadcast(timestamp + "Server: " + name + " has left the chatroom.\n")
+                    msgList.append(timestamp + "Server: " + name + " has left the chatroom.\n")
                     userList.remove(name)
                     cs.close()
                     print("The current list of user is: ", userList)
