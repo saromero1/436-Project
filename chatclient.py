@@ -6,8 +6,9 @@ from datetime import datetime
 #creating flags & variables
 # Sets the preselected IP and port for the chat server
 # Eneter your machine's IP address for the host_name. Alternatively, you can enter "localhost"
-host_name = "192.168.56.1"
+host_name = "192.168.1.23"
 port = 18000
+
 #Flags
 REPORT_REQUEST_FLAG = 0
 REPORT_RESPOSE_FLAG = 0
@@ -23,6 +24,7 @@ USERNAME = ""
 FILENAME = ""
 PAYLOAD_LENGTH = 0
 PAYLOAD = ""
+
 def parse_string(input_str, user_size):
     # Splitting the string into a list
     input_list = input_str.split(", ")
@@ -78,9 +80,9 @@ def get_chatroom_report():
     report_socket.close()
 
     # Print the response message from the server
-    print("There are " + online_users + " active users in the chatroom.")
+    print("\nThere are " + online_users + " active users in the chatroom.")
     parse_string(report_response, online_users)
-
+    print()
 
 while True:
     #prompts menu with 3 options
@@ -109,7 +111,6 @@ while True:
         #first s
         new_socket.send(name.encode())
 
-
         message = new_socket.recv(1024).decode()
         if message == "REJECTED1":
             print("The server rejects the join request. The chatroom has reached its maximum capacity.")
@@ -120,8 +121,6 @@ while True:
         if name == "damin":
             print("Welcome Administrator")
             new_socket.send(name.encode())
-
-
 
         while True:
             if message == "REJECTED1" or message == "REJECTED2":
@@ -157,7 +156,6 @@ while True:
                 except:
                     print("Error: Could not open or read file")
 
-
             # Appends the username and time to the clients message
             to_send = name + ": " + to_send
             date_now = datetime.now().strftime("[%H:%M] ")
@@ -166,10 +164,10 @@ while True:
             new_socket.send(to_send.encode())
         # close the socket
         new_socket.close()
+
     elif choice == "1":
         #do option 1, adding exit in the meantime
         get_chatroom_report()
     else:
         #new_socket.send("q".encode())
         exit()
-#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
