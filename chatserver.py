@@ -1,6 +1,7 @@
 import socket
 from threading import Thread
 from datetime import datetime
+import os
 # Create and Bind a TCP Server Socket
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 host_name = socket.gethostname()
@@ -16,7 +17,7 @@ JOIN_ACCEPT_FLAG = 0
 NEW_USER_FLAG = 0
 QUIT_REQUEST_FLAG = 0
 QUIT_ACCEPT_FLAG = 0
-ATTACHEMENT_FLAG = 0
+ATTACHMENT_FLAG = 0
 NUMBER = 0
 USERNAME = ""
 FILENAME = ""
@@ -38,6 +39,7 @@ def broadcast(msg):
     for client_socket in client_List:
         client_socket.send(msg.encode())
 
+
 def menu_list(my_list, my_tuples):
 
     result = []
@@ -54,6 +56,7 @@ def clientWatch(cs):
     JOIN_REJECT_FLAG = 0
     QUIT_REQUEST_FLAG = 0
     global NUMBER
+
 
     #first
     name = cs.recv(1024).decode()
@@ -75,14 +78,6 @@ def clientWatch(cs):
         if name in userList:
             JOIN_REJECT_FLAG = 1
 
-        '''
-        #checking to see if username is already selected
-        for x in userList:
-            if name == x:
-                JOIN_REJECT_FLAG = 1
-            else:
-                JOIN_REJECT_FLAG = 0
-        '''
         print(JOIN_REJECT_FLAG)
         userList.append(name)
         timestamp = datetime.now().strftime("[%H:%M] ")
@@ -102,19 +97,10 @@ def clientWatch(cs):
         try:
             if JOIN_REJECT_FLAG == 1:
                 if NUMBER > 3:
-                    #print("The server rejects the join request. The chatroom has reached its maximum capacity.")
                     cs.send("REJECTED1".encode())
-                    #userList.remove(name)
-                    #client_List.remove(cs)
-                    #cs.close()
-                    #break
+
                 else:
-                    #print("The server rejects the join request. Another user is using this username.")
                     cs.send("REJECTED2".encode())
-                    #userList.remove(name)
-                    #client_List.remove(cs)
-                    #cs.close()
-                    #break
 
             # Constantly listens for incoming message from a client 2nd
             msg = cs.recv(1024).decode()
@@ -149,6 +135,29 @@ def clientWatch(cs):
 
             if msg == "REPORT_REQUEST":
                 cs.send("it worked".encode())
+
+            if msg == "ATTACHMENT_FLAG":
+                ATTACHMENT_FLAG = 1
+                #cs.send("File Received".encode())
+                #receiving file path
+                msg = cs.recv(1024).decode()
+                filename = msg
+                #receiving file data
+                msg = cs.recv(1024).decode()
+                data = msg
+                #getting the file name
+                # create the file path for the "Downloads" folder
+                # get the current working directory
+                current_dir = os.getcwd()
+                downloads_path = os.path.join(current_dir, "Downloads")
+                filename.split('\\')[-1]
+                file_path = os.path.join(downloads_path, filename)
+                with open(file_path, "w") as f:
+                    f.write(data)
+
+                print("File received")
+                #print(msg)
+                continue
 
             if msg == "info":
                 print("Here is the info mate")

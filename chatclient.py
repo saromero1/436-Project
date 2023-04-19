@@ -1,4 +1,6 @@
 import socket
+import os
+import time
 from threading import Thread
 from datetime import datetime
 #creating flags & variables
@@ -15,7 +17,7 @@ JOIN_ACCEPT_FLAG = 0
 NEW_USER_FLAG = 0
 QUIT_REQUEST_FLAG = 0
 QUIT_ACCEPT_FLAG = 0
-ATTACHEMENT_FLAG = 0
+ATTACHMENT_FLAG = 0
 NUMBER = 0
 USERNAME = ""
 FILENAME = ""
@@ -98,7 +100,7 @@ while True:
         print("Connected.")
         print("Type lowercase 'q' at anytime to quit!")
         name = input("Enter your a username: ")
-
+        print("Type lowercase ‘a’ and press enter at any time to upload an attachment to the chatroom.")
         # Thread to listen for messages from the server
         t = Thread(target=listen_for_messages)
         t.daemon = True
@@ -113,8 +115,6 @@ while True:
             print("The server rejects the join request. The chatroom has reached its maximum capacity.")
         elif message == "REJECTED2":
             print("The server rejects the join request. Another user is using this username.")
-
-        print("Type lowercase ‘a’ and press enter at any time to upload an attachment to the chatroom.")
 
         # if user is an admin send the admin name before appending time and username
         if name == "damin":
@@ -145,7 +145,15 @@ while True:
                     with open(file_path, "r") as f:
                         file_content = f.read()
                         # Send the file content as a message to the server
+                        new_socket.send("ATTACHMENT_FLAG".encode())
+                        #sending file path
+                        new_socket.send(file_path.encode())
+                        #sending file data
+                        time.sleep(.1)
+                        new_socket.send(file_content.encode())
+                        #print(file_content)
                         to_send = file_content
+
                 except:
                     print("Error: Could not open or read file")
 
